@@ -58,11 +58,12 @@ elif [[ $why == d ]]; then
         if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@notanemail.com"; fi
 	echo -e "EMAIL=$EMAIL DOMAIN=$DOMAIN CPUSER=$CPUSER Does this look good? Type y for yes"; read good;
 	if [[ $good=y ]]; then
+		DOCROOT=`grep "documentroot:" /var/cpanel/userdata/$CPUSER/$DOMAIN | cut -d" " -f2`;
 		grep -v "d $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
 		grep -v "/bin/sh /root/installssl.sh $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
-		echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $DOMAIN www.$DOMAIN" >> /root/letsencryptscript.sh;
+		echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN www.$DOMAIN" >> /root/letsencryptscript.sh;
 		echo "/bin/sh /root/installssl.sh $DOMAIN" >> /root/letsencryptscript.sh;
-		/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $DOMAIN www.$DOMAIN
+		/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN www.$DOMAIN
 		/bin/sh /root/installssl.sh $DOMAIN
 		echo "This cert should now be installed!";
 fi;
