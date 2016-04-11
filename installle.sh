@@ -23,7 +23,7 @@ else echo "Your CentOS version is not supported, exiting";
 fi
 fi
 
-if [[ -a /root/installssl.sh ]]; then
+if [[ ! -a /root/installssl.sh ]]; then
 #Download and install the cPanel installer
 	wget files.wiredtree.com/misc/installssl.sh -O /root/installssl.sh
 fi
