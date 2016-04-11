@@ -1,9 +1,10 @@
 #Let's Install Let's Encrypt
 #version=0.1
 #Check to see if Let's Encrypt is already installed. If not, install it.
-if [ -a /root/letsencrypt/ ]; then
+if [[ ! -a /root/letsencrypt/ ]]; then
 #Install the Cert Generator
-if [[ ]]; then
+centos=`cat /etc/centos-release | cut -d. -f1 | cut -d" " -f4`
+if [[ $centos=="7" ]]; then
 	rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
 	rpm -ivh https://rhel6.iuscommunity.org/ius-release.rpm
 	yum -y install python27 python27-devel python27-pip python27-setuptools python27-virtualenv --enablerepo=ius
@@ -12,7 +13,7 @@ if [[ ]]; then
 	cd /root/letsencrypt
 	sed -i "s|--python python2|--python python2.7|" letsencrypt-auto
 	./letsencrypt-auto --verbose
-elif [[ ]]; then
+elif [[ $centos=="6" ]]; then
 	cd /root
 	git clone https://github.com/letsencrypt/letsencrypt
 	cd /root/letsencrypt
