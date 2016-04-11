@@ -4,7 +4,7 @@
 if [[ ! -a /root/letsencrypt/ ]]; then
 #Install the Cert Generator
 centos=`cat /etc/centos-release | cut -d. -f1 | cut -d" " -f4`
-if [[ $centos=="7" ]]; then
+if [[ $centos=="6" ]]; then
 	rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
 	rpm -ivh https://rhel6.iuscommunity.org/ius-release.rpm
 	yum -y install python27 python27-devel python27-pip python27-setuptools python27-virtualenv --enablerepo=ius
@@ -13,13 +13,13 @@ if [[ $centos=="7" ]]; then
 	cd /root/letsencrypt
 	sed -i "s|--python python2|--python python2.7|" letsencrypt-auto
 	./letsencrypt-auto --verbose
-elif [[ $centos=="6" ]]; then
+elif [[ $centos=="7" ]]; then
 	cd /root
 	git clone https://github.com/letsencrypt/letsencrypt
 	cd /root/letsencrypt
 	./letsencrypt-auto --verbose
-else echo "This is not supported, exiting";
-	break:
+else echo "Your CentOS version is not supported, exiting";
+	exit 1
 fi
 fi
 
