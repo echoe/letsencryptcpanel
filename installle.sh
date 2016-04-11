@@ -30,10 +30,10 @@ fi
 #Ask what you're installing this on
 echo -e "Please type an h for hostname, or a d for domain."; read why
 if [[ $why == h ]]; then
-	echo -e "If the hostname isn't `hostname`, please type it now."; read hostname
-	if [[ $hostname == "" ]]; then hostname=`hostname`; fi
+	echo -e "If the hostname isn't `hostname`, please type it now."; read HOSTNAME
+	if [[ $HOSTNAME == "" ]]; then HOSTNAME=`hostname`; fi
 	echo -e "Please let us know what email address you want the information for. If you don't specify one it will go to an obviously fake email."; read email
-	if [[ $email == "" ]]; then email="notarealemailaddress@notanemail.com"; fi
+	if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@notanemail.com"; fi
 	if [[ -a /root/letsencryptscript.sh ]]; then
 		cat > /root/letsencryptscript.sh <<EOF
 		/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $HOSTNAME
@@ -54,10 +54,10 @@ EOF
 		
 elif [[ $why == d ]]; then
 	echo -e "Domain?"; read DOMAIN; CPUSER=`/scripts/whoowns $DOMAIN`;
-	echo -e "Please let us know what email address you want the information for. If you don't specify one it will go to an obviously fake email."; read email
-        if [[ $email == "" ]]; then email="notarealemailaddress@notanemail.com"; fi
+	echo -e "Please let us know what email address you want the information for. If you don't specify one it will go to an obviously fake email."; read EMAIL
+        if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@notanemail.com"; fi
 	echo -e "EMAIL=$EMAIL DOMAIN=$DOMAIN CPUSER=$CPUSER Does this look good? Type y for yes"; read good;
-	if [[ $good=y ]]
+	if [[ $good=y ]]; then
 		grep -v "d $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
 		grep -v "/bin/sh /root/installssl.sh $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
 		echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $DOMAIN www.$DOMAIN" >> /root/letsencryptscript.sh;
