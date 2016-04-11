@@ -34,7 +34,7 @@ if [[ $why == h ]]; then
 	if [[ $HOSTNAME == "" ]]; then HOSTNAME=`hostname`; fi
 	echo -e "Please let us know what email address you want the information for. If you don't specify one it will go to an obviously fake email."; read email
 	if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@notanemail.com"; fi
-	if [[ -a /root/letsencryptscript.sh ]]; then
+	if [[ ! -a /root/letsencryptscript.sh ]]; then
 		cat > /root/letsencryptscript.sh <<EOF
 		/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $HOSTNAME
 		/bin/sh /root/installssl.sh $HOSTNAME
