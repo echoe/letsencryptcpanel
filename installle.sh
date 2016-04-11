@@ -41,8 +41,8 @@ if [[ $why == h ]]; then
 		service cpanel restart
 EOF
 	else
-		sed -i 's~/usr/local/apache/htdocs --renew-by-default -d~d' /root/letsencryptscript.sh;
-		sed -i 's~service cpanel restart~d' /root/letsencryptscript.sh;
+		grep -v "$HOSTNAME" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
+		grep -v "service cpanel restart" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
 		echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $HOSTNAME" >> /root/letsencryptscript.sh;
 		echo "/bin/sh /root/installssl.sh $HOSTNAME" >> /root/letsencryptscript.sh;
 		echo "service cpanel restart" >> /root/letsencryptscript.sh;
@@ -52,19 +52,20 @@ EOF
 	service cpanel restart
 	echo "Please test this now, the changes should have been made to the letsencryptscript :D"
 		
-elif [[ why == d ]]; then
+elif [[ $why == d ]]; then
 	echo -e "Domain?"; read DOMAIN; CPUSER=`/scripts/whoowns $DOMAIN`;
 	echo -e "Please let us know what email address you want the information for. If you don't specify one it will go to an obviously fake email."; read email
         if [[ $email == "" ]]; then email="notarealemailaddress@notanemail.com"; fi
 	echo -e "EMAIL=$EMAIL DOMAIN=$DOMAIN CPUSER=$CPUSER Does this look good? Type y for yes"; read good;
-	if [[ good=y ]]
-		sed -i 's~"-d $DOMAIN"~d' /root/letsencryptscript.sh;
-		sed -i 's~bin/sh /root/installssl.sh $DOMAIN~d' /root/letsencryptscript.sh;
+	if [[ $good=y ]]
+		grep -v "d $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
+		grep -v "/bin/sh /root/installssl.sh $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
 		echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $DOMAIN www.$DOMAIN" >> /root/letsencryptscript.sh;
 		echo "/bin/sh /root/installssl.sh $DOMAIN" >> /root/letsencryptscript.sh;
 		/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $DOMAIN www.$DOMAIN
 		/bin/sh /root/installssl.sh $DOMAIN
 		echo "This cert should now be installed!";
+fi;
 fi;
 #Add the crontab
 echo "Adding the crontab."
