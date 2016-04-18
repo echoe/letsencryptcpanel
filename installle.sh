@@ -1,5 +1,5 @@
 #Let's Install Let's Encrypt
-#version=0.1
+#version=0.2
 #Check to see if Let's Encrypt is already installed. If not, install it.
 if [[ ! -a /root/letsencrypt/ ]]; then
 #Install the Cert Generator
@@ -41,12 +41,13 @@ if [[ $why == h ]]; then
 		service cpanel restart
 EOF
 	else
-		grep -v "$HOSTNAME" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
-		grep -v "service cpanel restart" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
+		grep -qv "$HOSTNAME" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
+		grep -qv "service cpanel restart" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
 		echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $HOSTNAME" >> /root/letsencryptscript.sh;
 		echo "/bin/sh /root/installssl.sh $HOSTNAME" >> /root/letsencryptscript.sh;
 		echo "service cpanel restart" >> /root/letsencryptscript.sh;
 	fi
+	echo "Processing ..."
 	/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $HOSTNAME
 	/bin/sh /root/installssl.sh $HOSTNAME
 	service cpanel restart
@@ -59,18 +60,19 @@ elif [[ $why == d ]]; then
 	echo -e "EMAIL=$EMAIL DOMAIN=$DOMAIN CPUSER=$CPUSER Does this look good? Type y for yes"; read good;
 	if [[ $good=y ]]; then
 		DOCROOT=`grep "documentroot:" /var/cpanel/userdata/$CPUSER/$DOMAIN | cut -d" " -f2`;
-		grep -v "d $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
-		grep -v "/bin/sh /root/installssl.sh $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
+		grep -qv "d $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
+		grep -qv "/bin/sh /root/installssl.sh $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
 		echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN www.$DOMAIN" >> /root/letsencryptscript.sh;
 		echo "/bin/sh /root/installssl.sh $DOMAIN" >> /root/letsencryptscript.sh;
+		echo "Processing ..."
 		/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN www.$DOMAIN
 		/bin/sh /root/installssl.sh $DOMAIN
 		echo "This cert should now be installed!";
 fi;
 fi;
-#Add the crontab
+#Add the crontab if necessary.
 echo "Adding the crontab."
 if [[ -z `grep "0 0 */60 * * /bin/sh /root/letsencryptscript.sh" /var/spool/cron/root` ]]; then crontab -l | { cat; echo "0 0 */60 * * /bin/sh /root/letsencryptscript.sh"; } | crontab - ; fi
 #Done!
-echo "You're finished! Here's the contents of the letsencrypt script right now just in case. If you see any problems, you'll need to edit them manually."
+echo -e "\n You're finished! Here's the contents of the letsencrypt script right now just in case. If you see any problems, you'll need to edit them manually. \n ----- \n"
 cat /root/letsencryptscript.sh
