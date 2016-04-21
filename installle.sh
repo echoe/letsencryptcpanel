@@ -62,17 +62,17 @@ elif [[ $why == d ]]; then
 		DOCROOT=`grep "documentroot:" /var/cpanel/userdata/$CPUSER/$DOMAIN | cut -d" " -f2`;
 		grep -qv "d $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
 		grep -qv "/bin/sh /root/installssl.sh $DOMAIN" /root/letsencryptscript.sh > /root/letsencryptscript.sh;
-		echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN www.$DOMAIN" >> /root/letsencryptscript.sh;
+		echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN -d www.$DOMAIN" >> /root/letsencryptscript.sh;
 		echo "/bin/sh /root/installssl.sh $DOMAIN" >> /root/letsencryptscript.sh;
 		echo "Processing ..."
-		/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN www.$DOMAIN
+		/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN -d www.$DOMAIN
 		/bin/sh /root/installssl.sh $DOMAIN
 		echo "This cert should now be installed!";
 fi;
 fi;
 #Add the crontab if necessary.
 echo "Adding the crontab."
-if [[ -z `grep "0 0 */60 * * /bin/sh /root/letsencryptscript.sh" /var/spool/cron/root` ]]; then crontab -l | { cat; echo "0 0 */60 * * /bin/sh /root/letsencryptscript.sh"; } | crontab - ; fi
+if [[ -z `grep "0 0 01 */2 * /bin/sh /root/letsencryptscript.sh" /var/spool/cron/root` ]]; then crontab -l | { cat; echo "0 0 */60 * * /bin/sh /root/letsencryptscript.sh"; } | crontab - ; fi
 #Done!
 echo -e "\n You're finished! Here's the contents of the letsencrypt script right now just in case. If you see any problems, you'll need to edit them manually. \n ----- \n"
 cat /root/letsencryptscript.sh
