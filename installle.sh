@@ -34,34 +34,36 @@ if [[ $why == h ]]; then
 	if [[ $HOSTNAME == "" ]]; then HOSTNAME=`hostname`; fi
 	echo -e "Please let us know what email address you want the information for. If you don't specify one it will go to an obviously fake email."; read email
 	if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@notanemail.com"; fi
-    sed --in-place "/$HOSTNAME/d" /root/letsencryptscript.sh;
-    sed --in-place "/service cpanel restart/d" /root/letsencryptscript.sh;
+	if [[ -a /root/letsencryptscript.sh ]]; then 
+	    sed --in-place "/$HOSTNAME/d" /root/letsencryptscript.sh; 
+	    sed --in-place "/service cpanel restart/d" /root/letsencryptscript.sh; 
+	fi
 	echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $HOSTNAME" >> /root/letsencryptscript.sh;
 	echo "/bin/sh /root/installssl.sh $HOSTNAME" >> /root/letsencryptscript.sh;
 	echo "service cpanel restart" >> /root/letsencryptscript.sh;
-	fi
 	echo "Processing ..."
 	/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $HOSTNAME
 	/bin/sh /root/installssl.sh $HOSTNAME
 	service cpanel restart
 	echo "Please test this now, the changes should have been made to the letsencryptscript :D"
-		
 elif [[ $why == d ]]; then
 	echo -e "Domain?"; read DOMAIN; CPUSER=`/scripts/whoowns $DOMAIN`;
 	echo -e "Please let us know what email address you want the information for. If you don't specify one it will go to an obviously fake email."; read EMAIL
-        if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@notanemail.com"; fi
+    if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@notanemail.com"; fi
     DOCROOT=`grep "documentroot:" /var/cpanel/userdata/$CPUSER/$DOMAIN | cut -d" " -f2`;
 	echo -e "EMAIL=$EMAIL DOMAIN=$DOMAIN CPUSER=$CPUSER DOCROOT=$DOCROOT Does this look good? Type y for yes"; read good;
 	if [[ $good=y ]]; then
-		sed --in-place "/d $DOMAIN/d" /root/letsencryptscript.sh;
-        sed --in-place "/installssl.sh $DOMAIN/d" /root/letsencryptscript.sh;
+		if [[ -a /root/letsencryptscript.sh ]]; then 
+		    sed --in-place "/d $DOMAIN/d" /root/letsencryptscript.sh;
+		    sed --in-place "/installssl.sh $DOMAIN/d" /root/letsencryptscript.sh;
+		fi
 		echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN -d www.$DOMAIN" >> /root/letsencryptscript.sh;
 		echo "/bin/sh /root/installssl.sh $DOMAIN" >> /root/letsencryptscript.sh;
 		echo "Processing ..."
 		/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN -d www.$DOMAIN
 		/bin/sh /root/installssl.sh $DOMAIN
 		echo "This cert should now be installed!";
-fi;
+    fi;
 fi;
 #Add the crontab if necessary.
 echo "Adding the crontab."
