@@ -1,18 +1,6 @@
+#!/bin/bash
 #Let's Install Let's Encrypt
-#version=0.31
-
-#Flags.
-if [[ $* == *--help* ]]; then
-  echo "OPTIONS:"
-  echo "[domain] [email] --auto: Automatically installs an SSL without prompts for a specific domain."
-  echo "For example: sh /root/installle.sh domain.com me@domain.com --auto will install an SSL for domain.com with the specified email address."
-fi
-if [[ $* == *--auto* ]]; then
-  DOMAIN=$1;
-  EMAIL=$2;
-  if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@notanemail.com"; fi
-  echo "This is the domain we're installing an SSL on: $DOMAIN using this email: $EMAIL"
-fi
+#version=0.33
 
 #Check to see if Let's Encrypt is already installed. If not, install it.
 if [[ ! -a /root/letsencrypt/ ]]; then
@@ -43,7 +31,12 @@ if [[ ! -a /root/installssl.sh ]]; then
 fi
 
 #Set the domain and email.
-if [[ -z $DOMAIN ]];
+if [[ -z $1 ]]; then
+  DOMAIN=$1;
+  EMAIL=$2;
+  if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@notanemail.com"; fi
+  echo "This is the domain we're installing an SSL on: $DOMAIN using this email: $EMAIL"
+else;
   echo "Please specify the domain you would like to have an SSL installed on."; read DOMAIN;
   echo "Please specify the email you want this domain to be installed under."; read EMAIL;
   if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@notanemail.com"; fi
