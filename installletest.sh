@@ -2,29 +2,15 @@
 #Let's Install Let's Encrypt
 #version=0.4
 
-#Check to see if Let's Encrypt is already installed. If not, install it.
+#Check to see if Let's Encrypt is already installed. If not, install certbot :D.
 if [[ -a /root/letsencrypt/ ]];
 then
-  echo "Letsencrypt is already installed.";
-else
-  centos=`cat /etc/centos-release | cut -d. -f1 | cut -d" " -f4`;
-  if [[ $centos=="6" ]]; then
-    rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
-    rpm -ivh https://rhel6.iuscommunity.org/ius-release.rpm
-    yum -y install python27 python27-devel python27-pip python27-setuptools python27-virtualenv --enablerepo=ius
-    cd /root
-    git clone https://github.com/letsencrypt/letsencrypt
-    cd /root/letsencrypt
-    sed -i "s|--python python2|--python python2.7|" letsencrypt-auto
-    ./letsencrypt-auto --verbose
-  elif [[ $centos=="7" ]]; then
-    cd /root
-    git clone https://github.com/letsencrypt/letsencrypt
-    cd /root/letsencrypt
-    ./letsencrypt-auto --verbose
-  else echo "Your CentOS version is not supported, exiting";
+  echo "Letsencrypt is installed already! Pausing. You will need to remove this and replace the current installation to use this script.";
   exit 1
-  fi
+else
+  cd /root/
+  git clone https://github.com/certbot/certbot
+  cd certbot
 fi
 
 #Check for and install the cPanel SSL install script.
@@ -37,7 +23,7 @@ fi
 DOMAIN=$1;
 EMAIL=$2;
 if [[ $DOMAIN == "" ]]; then
-  echo "It looks like you aren't auto-installing ( ./installssl.sh domain email ).";
+  echo "It looks like you aren't auto-installing ( ./installle.sh domain email ).";
   echo "Please specify the domain you would like to have an SSL installed on."; read DOMAIN;
   echo "Please specify the email you want this domain to be installed under."; read EMAIL;
 fi
@@ -51,11 +37,11 @@ if [[ $DOMAIN == `hostname` ]]; then
     sed -i "/$DOMAIN/d" /root/letsencryptscript.sh;
     sed -i "/service cpanel restart/d" /root/letsencryptscript.sh;
   fi
-  echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $DOMAIN" >> /root/letsencryptscript.sh;
+  echo "/bin/sh /root/certbot/certbot-auto --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $DOMAIN" >> /root/letsencryptscript.sh;
   echo "/bin/sh /root/installssl.sh $DOMAIN" >> /root/letsencryptscript.sh;
   echo "service cpanel restart" >> /root/letsencryptscript.sh;
   echo "Processing ..."
-  /root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $DOMAIN
+  /bin/sh /root/certbot/certbot-auto --text --agree-tos --email $EMAIL certonly --webroot --webroot-path /usr/local/apache/htdocs --renew-by-default -d $DOMAIN
   /bin/sh /root/installssl.sh $DOMAIN
   service cpanel restart
   echo "Please test this now, the changes should have been made to the letsencryptscript."
@@ -67,10 +53,10 @@ elif [[ $DOMAIN != `hostname` ]]; then
     sed -i "/d $DOMAIN/d" /root/letsencryptscript.sh;
     sed -i "/installssl.sh $DOMAIN/d" /root/letsencryptscript.sh;
   fi
-  echo "/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN -d www.$DOMAIN" >> /root/letsencryptscript.sh;
+  echo "/bin/sh /root/certbot/certbot-auto --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN -d www.$DOMAIN" >> /root/letsencryptscript.sh;
   echo "/bin/sh /root/installssl.sh $DOMAIN" >> /root/letsencryptscript.sh;
   echo "Processing ..."
-  /root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN -d www.$DOMAIN
+  /bin/sh /root/certbot/certbot-auto --text --agree-tos --email $EMAIL certonly --webroot --webroot-path $DOCROOT --renew-by-default -d $DOMAIN -d www.$DOMAIN
   /bin/sh /root/installssl.sh $DOMAIN
   echo "This cert should now be installed!";
 fi;
