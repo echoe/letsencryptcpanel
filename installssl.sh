@@ -14,5 +14,5 @@ if [[ $dom == `hostname` ]]; then
   whmapi1 install_service_ssl_certificate service=dovecot crt=$crt cabundle=$ca key=$key
 else
   ip=`cat /var/cpanel/users/$user | grep IP | cut -d"=" -f2`
-  whmapi1 installssl domain=$dom crt=$crt key=$key cab=$ca ip=$ip
+  whmapi1 installssl domain=$dom crt=$crt key=$key cab=$ca ip=$ip enable_sni_for_mail=1
 fi
