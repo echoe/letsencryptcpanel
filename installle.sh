@@ -20,7 +20,7 @@ fi
 
 #Check for and install the cPanel SSL install script.
 if [[ ! -a /root/installssl.sh ]]; then
-        wget files.wiredtree.com/misc/installssl.sh -O /root/installssl.sh
+        wget https://raw.githubusercontent.com/echoe/letsencryptcpanel/master/installssl.sh --no-check-certificate -O /root/installssl.sh
         else echo "We already have the installssl script."
 fi
 
