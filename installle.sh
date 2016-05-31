@@ -37,7 +37,7 @@ fi
 DOMAIN=$1;
 EMAIL=$2;
 if [[ $DOMAIN == "" ]]; then
-  echo "It looks like you aren't auto-installing ( ./installssl.sh domain email ).";
+  echo "It looks like you aren't auto-installing ( ./installle.sh domain email ).";
   echo "Please specify the domain you would like to have an SSL installed on."; read DOMAIN;
   echo "Please specify the email you want this domain to be installed under."; read EMAIL;
 fi
