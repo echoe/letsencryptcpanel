@@ -3,14 +3,19 @@
 #version=0.4
 
 #Check to see if Let's Encrypt is already installed. If not, install certbot :D.
-if [[ -a /root/letsencrypt/ ]];
-then
-  echo "Letsencrypt is installed already! Pausing. You will need to remove this and replace the current installation to use this script.";
-  exit 1
+if [[ -a /root/letsencrypt/ ]]; then
+  echo "Letsencrypt is installed already! Do you want us to convert you to the new certbot? y for yes."; read convert;
+  if [[ $convert=="y" ]]; then
+    sed -i 's~/root/.local/share/letsencrypt/bin/python2.7 /root/.local/share/letsencrypt/bin/letsencrypt~/bin/sh /root/certbot/certbot-auto~g' letsencryptscript.sh;
+    rm -rf /root/letsencrypt/
+  else;
+    echo "Okay, exiting. Please clean this up on your end, then rerun the script."
+    exit 1
+  fi
 else
-  cd /root/
-  git clone https://github.com/certbot/certbot
-  cd certbot
+  cd /root/;
+  git clone https://github.com/certbot/certbot;
+  cd certbot;
 fi
 
 #Check for and install the cPanel SSL install script.
