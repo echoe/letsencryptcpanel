@@ -1,2 +1,3 @@
-Hi! This is a repository to install let's encrypt SSL certificates onto a cPanel server with shell scripts. :) cPanel plugin may come in the future but would take some doing/interest.
-If you have any questions/requests, please let me know!
+Hi! This is a repository to install let's encrypt SSL certificates onto a cPanel server with shell scripts. :)
+This is outmoded as cPanel made their own let's encrypt plugin. I would recommend using that.
+If you want to know more about how to write scripts to use cPanel's CLI or anything like that, you can look at this anyways!
