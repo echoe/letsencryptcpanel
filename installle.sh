@@ -32,7 +32,7 @@ if [[ $DOMAIN == "" ]]; then
   echo "Please specify the domain you would like to have an SSL installed on."; read DOMAIN;
   echo "Please specify the email you want this domain to be installed under."; read EMAIL;
 fi
-if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@notanemail.com"; fi
+if [[ $EMAIL == "" ]]; then EMAIL="notarealemailaddress@example.com"; fi
 echo "We are installing an SSL on $DOMAIN with the email $EMAIL ."
 
 #Install the SSL.
